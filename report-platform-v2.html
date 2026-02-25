@@ -749,17 +749,6 @@
           </div>
 
           <div class="form-group full">
-            <label><i class="fas fa-triangle-exclamation"></i> 違規樣態（可複選）<span class="required">*</span></label>
-            <div class="checkbox-group">
-              <label class="checkbox-item"><input type="checkbox" class="violation-cb"> 非法販售</label>
-              <label class="checkbox-item"><input type="checkbox" class="violation-cb"> 標示不符或誤導</label>
-              <label class="checkbox-item"><input type="checkbox" class="violation-cb"> 來源不明</label>
-              <label class="checkbox-item"><input type="checkbox" class="violation-cb"> 仿冒或侵權</label>
-              <label class="checkbox-item"><input type="checkbox" class="violation-cb"> 逾期或失效商品</label>
-            </div>
-          </div>
-
-          <div class="form-group full">
             <label><i class="fas fa-image"></i> 佐證截圖（最多 3 張）</label>
             <div class="upload-area" onclick="document.getElementById('file-upload').click()">
               <i class="fas fa-cloud-arrow-up"></i>
@@ -778,17 +767,6 @@
           <div class="form-group full">
             <label><i class="fas fa-envelope"></i> 通報人 Email</label>
             <input type="email" id="email-field" placeholder="選填，用於接收通報進度通知">
-          </div>
-
-          <div class="form-group full">
-            <label>匿名設定</label>
-            <div class="anon-toggle" onclick="toggleAnon()">
-              <div class="toggle-switch" id="anon-toggle"></div>
-              <div>
-                <div style="font-size:14px;font-weight:700">匿名通報</div>
-                <div style="font-size:12px;color:var(--text-secondary)">開啟後個人資料不會出現在公開紀錄中</div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -867,7 +845,6 @@
       </select>
       <select class="filter-select" id="filter-status" onchange="filterRecords()">
         <option value="">所有狀態</option>
-        <option value="pending">待審核</option>
         <option value="reviewing">審核中</option>
         <option value="done">已處理</option>
         <option value="invalid">不成立</option>
@@ -1066,15 +1043,6 @@ function detectPlatform(url) {
 }
 
 // ─────────────────────────────────
-// 4. TOGGLE ANON
-// ─────────────────────────────────
-let anonOn = false;
-function toggleAnon() {
-  anonOn = !anonOn;
-  document.getElementById('anon-toggle').classList.toggle('on', anonOn);
-}
-
-// ─────────────────────────────────
 // 5. IMAGE PREVIEW WITH DELETE
 // ─────────────────────────────────
 let uploadedFiles = [];
@@ -1138,7 +1106,6 @@ function goStep2() {
       <div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">禁售類別</div><div style="font-size:14px;font-weight:700">${cat}</div></div>
       <div style="grid-column:1/-1"><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">商品名稱</div><div style="font-size:14px;font-weight:700">${name}</div></div>
       <div style="grid-column:1/-1"><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">商品連結</div><div style="font-size:12px;color:var(--amber);word-break:break-all">${url}</div></div>
-      <div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">匿名通報</div><div style="font-size:14px;font-weight:700">${anonOn?'是':'否'}</div></div>
     </div>
   `;
   document.getElementById('form-step1').classList.remove('active');
