@@ -92,6 +92,11 @@
   .stat-card { background: var(--navy-mid); padding: 20px; border-radius: 12px; border: 1px solid var(--gray-border); border-top: 3px solid var(--amber); }
   .chart-container { height: 250px; margin-top: 15px; }
 
+  /* ─── FILTER ─── */
+  .filter-btn { background: var(--input-bg); border: 1px solid var(--gray-border); color: var(--text-secondary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s; }
+  .filter-btn:hover { color: white; border-color: var(--amber); }
+  .filter-btn.active { background: rgba(245,166,35,0.15); color: var(--amber); border-color: var(--amber); }
+
   /* RWD */
   @media (max-width: 768px) {
     .form-grid, .stats-grid { grid-template-columns: 1fr; }
@@ -165,17 +170,7 @@
             <input type="file" id="file-upload" accept="image/*" multiple style="display:none" onchange="previewFiles(this)">
             <div class="preview-container" id="preview-container"></div>
           </div>
-          <div class="form-group full">
-            <label><i class="fas fa-list"></i> 禁售類別 <span class="required">*</span></label>
-            <select id="category-select">
-              <option value="">請選擇類別</option>
-              <option>未核准藥品或偽藥</option>
-              <option>仿冒品 / 侵權商品</option>
-              <option>違規食品添加物</option>
-              <option>危險玩具（未符 CNS 標準）</option>
-              <option>其他</option>
-            </select>
-          </div>
+
         </div>
         <div style="margin-top:25px; text-align:right">
           <button class="btn-primary" style="padding:12px 30px; border:none; border-radius:8px; cursor:pointer; font-weight:700" onclick="goStep2()">下一步 <i class="fas fa-arrow-right"></i></button>
@@ -205,6 +200,14 @@
   <div class="container">
     <div class="page-header">
       <h1>通報紀錄歷史</h1>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <label style="margin-bottom:12px"><i class="fas fa-filter"></i> 篩選狀態</label>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="filter-btn active" data-filter="all" onclick="filterRecords('all')">全部</button>
+        <button class="filter-btn" data-filter="done" onclick="filterRecords('done')">已完成</button>
+        <button class="filter-btn" data-filter="reviewing" onclick="filterRecords('reviewing')">審核中</button>
+      </div>
     </div>
     <div id="records-list"></div>
   </div>
@@ -318,10 +321,9 @@ function goStep2() {
   const url = document.getElementById('product-url').value;
   const seller = document.getElementById('seller-id').value;
   const name = document.getElementById('product-name').value;
-  const cat = document.getElementById('category-select').value;
   const plat = document.getElementById('platform-select').value;
 
-  if(!url || !seller || !name || !cat || !plat) {
+  if(!url || !seller || !name || !plat) {
     alert("請完整填寫必填資訊 (*)");
     return;
   }
@@ -330,7 +332,6 @@ function goStep2() {
     <strong>平台：</strong> ${PLATFORM_MAP[plat].name}<br>
     <strong>賣家：</strong> ${seller}<br>
     <strong>商品：</strong> ${name}<br>
-    <strong>類別：</strong> ${cat}<br>
     <strong>截圖：</strong> ${uploadedFiles.length} 張
   `;
   document.getElementById('form-step1').classList.remove('active');
@@ -365,9 +366,11 @@ function submitReport() {
 }
 
 // 6. 渲染歷史紀錄
+let currentFilter = 'all';
 function renderHistory() {
   const list = document.getElementById('records-list');
-  list.innerHTML = records.map(r => `
+  const filtered = currentFilter === 'all' ? records : records.filter(r => r.status === currentFilter);
+  list.innerHTML = filtered.map(r => `
     <div class="record-card">
       <div class="record-info">
         <div class="plat-icon" style="background:${PLATFORM_MAP[r.key]?.color || '#555'}; color:white">${PLATFORM_MAP[r.key]?.name[0]}</div>
@@ -379,6 +382,13 @@ function renderHistory() {
       <div class="status-badge status-${r.status}">${r.status === 'done' ? '已完成' : r.status === 'reviewing' ? '審核中' : '待處理'}</div>
     </div>
   `).join('');
+}
+
+function filterRecords(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+  renderHistory();
 }
 
 // 7. 統計與圖表
